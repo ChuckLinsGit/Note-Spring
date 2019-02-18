@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
+     
+
+	<!-- 注册代理目标对象 -->
+    <bean name="testSchool" class="spring.aop.pointCutAdvisor.smartProxyCreator.beanNameProxyCreator.bean.School">
+		<property name="name" value="GDOU"/>
+	</bean>
+	<bean name="testImpl" class="spring.aop.pointCutAdvisor.smartProxyCreator.beanNameProxyCreator.bean.testImpl">
+		<property name="name" value="Chuck Lin "/>
+		<property name="age" value="22"/>
+		<property name="school" ref="testSchool"/>
+	</bean>
+	<bean name="testImpl2" class="spring.aop.pointCutAdvisor.smartProxyCreator.beanNameProxyCreator.bean.testImpl">
+		<property name="name" value="Chuck Lin "/>
+		<property name="age" value="22"/>
+		<property name="school" ref="testSchool"/>
+	</bean>
+	
+	<!-- 注册切面：通知 -->
+	<bean name="testAfterAdvice" class="spring.aop.pointCutAdvisor.smartProxyCreator.beanNameProxyCreator.bean.AfterAdvice"/>
+	
+	<!-- 注册切面：顾问 -->
+	<bean name="testAfterAdvisor" class="org.springframework.aop.support.RegexpMethodPointcutAdvisor">
+		<property name="advice" ref="testAfterAdvice"/>
+		<!-- 
+		正则表达式切入点顾问制定的方法名必须使用全限定方法名：即出现项目名、包名、类名
+		.*toString：.表示任意单个字符，*表示前一个字符出现0次或任意次数 ，整个的意思是当前项目任意路径下的toString
+		但由于代理对象制定为spring.aop.pointCutAdvisor.regexp.bean.testImpl的对象，故匹配该对象下的toString
+		-->
+		<!-- <property name="pattern" value=".*toString"/> -->
+		<!-- <property name="patterns" value=".*toString,.*forName"/> -->
+		<!-- 正则表达式之间可以运算 -->
+		<property name="patterns" value=".*toString|.*forName"/>
+	</bean>
+	
+	<!-- 注册接口 -->
+	<!-- <bean name="testInterface" class="spring.aop.beforeAdvice.DAO.testDAO"/> -->
+	
+	<!-- 
+	注册bean名称自动代理生成器：
+	       可以为指定对象指定注册通知和顾问
+	 -->
+	<bean class="org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator">
+		
+		<!-- 指定代理目标对象 -->
+		<property name="beanNames" value="testImpl,testImpl2"/>
+		
+		<!-- 		
+		指定注册切面：顾问 
+		<property name="interceptorNames" value="testAfterAdvisor"/> 
+		-->
+
+		<!-- 指定注册切面：通知 -->
+		<property name="interceptorNames" value="testAfterAdvice"/>
+	</bean>
+</beans>

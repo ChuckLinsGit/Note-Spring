@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
+			
+	<!-- 注册代理目标对象 -->
+	<bean name="testSchool" class="spring.aop.CGLIBProxy.bean.School">
+		<property name="name" value="GDOU"/>
+	</bean>
+	<bean name="testImpl" class="spring.aop.CGLIBProxy.bean.testImpl">
+		<property name="name" value="Chuck Lin "/>
+		<property name="age" value="22"/>
+		<property name="school" ref="testSchool"/>
+	</bean>
+
+	<!-- 注册切面：通知 -->
+	<bean name="testAfterAdvice" class="spring.aop.CGLIBProxy.bean.AfterAdvice" />
+	
+	<!-- 注册接口 -->
+	<!-- <bean name="testInterface" class="spring.aop.beforeAdvice.DAO.testDAO"/> -->
+	
+	<!-- 注册代理类 -->
+	<bean id="testCGLIBProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
+		
+		<!-- 指定代理目标对象 -->
+		<!-- <property name="target" ref="testImpl"/> -->
+		<property name="targetName" value="testImpl"/>
+
+		<!-- 无需指定接口：自动搜索 -->
+		<!-- <property name="interfaces" value="testInterface"/> -->
+		
+		<!-- 指定注册切面：通知 -->
+		<property name="interceptorNames" value="testAfterAdvice" />
+		
+		<!-- 设置使用CGLIB代理 -->
+		<property name="proxyTargetClass" value="true"/>
+
+	</bean>
+	
+	
+	<!-- 
+	注册无接口对象，虚拟机将自动使用CGLIB代理
+	注册代理目标对象 
+	<bean name="testImplWithoutImplements" class="spring.aop.CGLIBProxy.bean.testImplWithoutImplements">
+		<property name="name" value="Chuck Lin "/>
+		<property name="age" value="22"/>
+		<property name="school" ref="testSchool"/>
+	</bean>
+	
+	注册切面：通知
+	<bean name="testAfterAdviceWithoutImplements" class="spring.aop.CGLIBProxy.bean.AfterAdvice"/>
+	
+	注册接口 
+	<bean name="testInterface" class="spring.aop.beforeAdvice.DAO.testDAO"/>
+	
+	注册代理类
+	<bean id="testCGLIBProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
+		
+		指定代理目标对象 
+		<property name="target" ref="testImpl"/>
+		<property name="targetName" value="testImplWithoutImplements"/>
+
+		无需指定接口：自动搜索
+		<property name="interfaces" value="testInterface"/>
+		
+		指定注册切面：通知
+		<property name="interceptorNames" value="testAfterAdviceWithoutImplements"/>
+	</bean>
+	-->
+</beans>

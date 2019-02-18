@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:aop="http://www.springframework.org/schema/aop" 
+    xsi:schemaLocation="
+     	http://www.springframework.org/schema/beans 
+     	http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/aop 
+        http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+	<!-- 注册代理目标对象 -->
+    <bean name="testSchool" class="spring.aop.aspectJ.annotation.bean.School">
+		<property name="name" value="GDOU"/>
+	</bean>
+	
+	<bean name="testImpl" class="spring.aop.aspectJ.annotation.bean.testImpl">
+		<property name="name" value="Chuck Lin "/>
+		<property name="age" value="22"/>
+		<property name="school" ref="testSchool"/>
+	</bean>
+	
+	<!-- 注册切面：通知 -->
+	<bean id="aspectJAnnotationTest" class="spring.aop.aspectJ.annotation.bean.aspectJAnnotation"/>
+	
+	<aop:aspectj-autoproxy/>
+	
+</beans>
