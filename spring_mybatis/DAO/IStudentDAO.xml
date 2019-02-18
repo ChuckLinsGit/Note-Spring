@@ -1,0 +1,27 @@
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="spring.spring_mybatis.DAO.IStudentDAO">
+
+	<insert id="insertStudent" parameterType="Student">
+		INSERT INTO STUDENT (SID,NAME,AGE,SCORE,CLASSID) VALUES (#{sid},#{name},#{age},#{score},#{classid})
+		<!--SELECT @@Identify-->
+	</insert> 
+		
+	<update id="deleteStudent" parameterType="Map">
+		DELETE FROM STUDENT WHERE ${condition}=#{value}
+	</update>
+	
+	<update id="updateStudent">
+		UPDATE STUDENT SET SID=#{sid},NAME=#{name},AGE=#{age},SCORE=#{score},CLASSID=#{classid} WHERE SID=#{sid}
+	</update>
+	
+	<select id="queryStudents" resultType="Student">
+		SELECT * FROM STUDENT
+	</select>
+	
+	<select id="queryStudentNameById" resultType="String">
+		SELECT (NAME) FROM STUDENT WHERE SID=#{sid}
+	</select>
+</mapper>

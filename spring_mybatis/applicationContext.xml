@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans 
+	xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context" 
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/beans 
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context 
+        http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<context:property-placeholder location="/src/spring/spring_mybatis/jdbcForMysql.properties"/>
+<!-- spring与mybatis整合的地方在于将Model层即与数据库的交互交给mybatis，因此关键在于把管理映射文件的
+	SQLsessionFactory交给spring管理容器管理，直接由spring管理容器负责注入 -->
+<!-- 注册c3p0 -->
+	<bean id="myDataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+		<property name="driverClass" value="${jdbc.driver}"/>
+		<property name="jdbcUrl" value="${jdbc.url}"/>
+		<property name="user" value="${jdbc.user}"/>
+		<property name="password" value="${jdbc.password}"/>
+	</bean>  
+
+<!-- 注册SQLSessionFactory 需要注入主配置文件和数据源-->
+	<bean id="mySqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="configLocation" value="/src/spring/spring_mybatis/mybatis-config.xml"/>
+		<property name="dataSource" ref="myDataSource"/>
+	</bean>	
+
+<!--
+	通过MapperFactroyBean来注册DAO 需要注入SQLSessionFactory和对应的DAO接口
+	<bean id="IStudentDAO" class="org.mybatis.spring.mapper.MapperFactoryBean">
+		<property name="sqlSessionFactory" ref="mySqlSessionFactory"/>
+		<property name="mapperInterface" value="spring.spring_mybatis.DAO.IStudentDAO"/>	
+	</bean>
+	
+	注册service 
+	<bean id="StudentServiceImpl" class="spring.spring_mybatis.service.ServiceImpl">
+		<property name="dao" ref="IStudentDAO"/>
+	</bean> 
+-->
+	
+	<!-- 使用MapperScannerConfigurer解决使用MapperFactoryBean时每个DAO都必须注册的问题 -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<!-- 特别注意name="sqlSessionFactoryBeanName" value="mySqlSessionFactory -->
+		<property name="sqlSessionFactoryBeanName" value="mySqlSessionFactory"/>
+		<property name="basePackage" value="spring.spring_mybatis.DAO"/>
+	</bean>
+	
+		<!-- 使用DAO注册的对象，可以直接调用接口名 -->
+	<bean id="StudentServiceImpl" class="spring.spring_mybatis.service.ServiceImpl">
+		<!--这里spring有个bug： 如果DAO接口名为Student,则ref应为student -->
+		<property name="dao" ref="IStudentDAO"/>
+	</bean>
+	
+
+
+</beans>
