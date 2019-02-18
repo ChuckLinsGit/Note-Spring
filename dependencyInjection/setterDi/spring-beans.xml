@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
+		
+<!-- 	<bean id="testImpl1" parent="baseTestImpl1">
+		<property name="age" value="#{T(java.lang.Math).random()*30}"/>
+	</bean> 
+	
+	<bean id="testImpl2" parent="baseTestImpl1">
+		<property name="age" value="#{testImpl1.age >23 ? 23 :testImpl1.age}"/>
+	</bean> 
+	
+	<bean id="testImpl"  parent="baseTestImpl1">
+		<property name="age" value="#{testImpl2.getAgeIfLess23()}"/>
+	</bean> -->
+	
+		
+	<bean id="testImpl1" class="spring.dependencyInjection.setterDi.bean.testImpl2" parent="baseTestImpl2">
+		<property name="workAge" value="#{T(java.lang.Math).random()*30}"/>
+	</bean> 
+	
+	<bean id="testImpl2" class="spring.dependencyInjection.setterDi.bean.testImpl" parent="baseTestImpl2">
+		<property name="age" value="#{T(java.lang.Math).random()*30}"/>
+	</bean> 
+	
+	<bean id="testImpl"  class="spring.dependencyInjection.setterDi.bean.testImpl"  parent="baseTestImpl2">
+		<property name="age" value="#{testImpl2.age >23 ? 23 :testImpl2.age}"/>
+	</bean>
+
+</beans>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
+    		
+   <!-- 注册作用域为singleton的bean -->
+   <!-- bean的作用域有singleton（在访问时再创建对象）、prototype（未访问前就创建对象）、request、session  -->		
+	<bean id="testImpl" class="spring.baseAssemble.context.Impl.testImpl" scope="singleton"/>
+	
+<!-- 	 注册Bean后处理器 
+	<bean class="spring.baseAssemble.context.processor.testBeanPostProcessor"/> 
+-->
+</beans>

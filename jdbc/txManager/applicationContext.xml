@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xmlns:tx="http://www.springframework.org/schema/tx"
+    xmlns:context="http://www.springframework.org/schema/context" 
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/beans 
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context 
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/tx 
+        http://www.springframework.org/schema/tx/spring-tx.xsd
+        http://www.springframework.org/schema/aop 
+        http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+	<!-- ===================================IOC===================================== -->
+
+<!-- 注册属性文件：必须加context约束-->	
+	<context:property-placeholder location="/src/spring/jdbc/txManager/jdbcForMysql.properties"/>
+	
+<!-- 注册c3p0 -->
+	<bean id="myDataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+		<property name="driverClass" value="${jdbc.driver}"/>
+		<property name="jdbcUrl" value="${jdbc.url}"/>
+		<property name="user" value="${jdbc.user}"/>
+		<property name="password" value="${jdbc.password}"/>
+	</bean>  
+	
+<!-- 注册jdbcTemplate -->
+	<bean id="myJdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+		<property name="dataSource" ref="myDataSource"/>
+	</bean>
+	
+<!-- 注册dao -->
+	<bean id="AccountDAOImpl" class="spring.jdbc.txManager.DAO.IAccountDAOImpl">
+		<property name="jdbcTemplate" ref="myJdbcTemplate"/>	
+	</bean>
+	
+	<bean id="StockDAOImpl" class="spring.jdbc.txManager.DAO.IStockDAOImpl">
+		<property name="jdbcTemplate" ref="myJdbcTemplate"/>	
+	</bean>
+<!-- 注册service -->
+	<bean id="ServiceImpl" class="spring.jdbc.txManager.service.ServiceImpl">
+		<property name="adao" ref="AccountDAOImpl"/>
+		<property name="sdao" ref="StockDAOImpl"/>
+	</bean>
+	
+	<!-- ===================================AOP===================================== -->
+	
+	<bean id="transationManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="myDataSource"/>
+	</bean>
+	
+<!-- 	
+	<bean id="serviceProxy" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+		<property name="transactionManager" ref="transationManager"/>
+		<property name="target" ref="ServiceImpl"/>
+		<property name="transactionAttributes">
+			<props>
+				
+				-异常：出现异常时回滚
+				+异常：出现异常提交
+				
+				<prop key="add*">ISOLATION_DEFAULT,PROPAGATION_REQUIRED</prop>
+				<prop key="buyStock">ISOLATION_DEFAULT,PROPAGATION_REQUIRED,-BuyStockException</prop>
+			</props>
+		</property>
+	</bean> 
+	
+	注解式织入事务管理器 
+	<tx:annotation-driven transaction-manager="transationManager"/>
+-->
+	
+	<!-- AspectJ织入事务管理器—
+		隔离级(isolation)别分四种(从高到低)：
+			I.可序列化(serializable)：要求事务结束后释放写读锁，并要求意向锁
+			II.可重复读(REPEATABLE_READ)：要求事务结束后释放写读锁，但不要求意向锁
+			III.读提交(READ_COMMITTED):要求事务结束后释放写锁，select语句后立即释放读锁，不要求意向锁
+			IV.读不提交(READ_UNCOMMITTED)：不要求事务上锁
+		传播级别(PROPAGATION)
+			 REQUIRED：如果当前没有事务，就新建一个事务，如果已经存在一个事务中，加入到这个事务中。这是最常见的选择。
+			 SUPPORTS：支持当前事务，如果当前没有事务，就以非事务方式执行。
+			 MANDATORY：使用当前的事务，如果当前没有事务，就抛出异常。
+			 REQUIRES_NEW：新建事务，如果当前存在事务，把当前事务挂起。
+			 NOT_SUPPORTED：以非事务方式执行操作，如果当前存在事务，就把当前事务挂起
+			 NEVER：以非事务方式执行，如果当前存在事务，则抛出异常。
+			 NESTED：如果当前存在事务，则在嵌套事务内执行。如果当前没有事务，则执行与PROPAGATION_REQUIRED类 似的操作。 -->
+	<tx:advice id="txAdvice" transaction-manager="transationManager">
+		<tx:attributes>
+			<tx:method name="add*" isolation="DEFAULT" propagation="REQUIRED"/>
+			<tx:method name="buyStock" isolation="DEFAULT" propagation="REQUIRED" rollback-for="spring.jdbc.txManager.service.BuyStockException"/>
+		</tx:attributes>
+	</tx:advice>
+
+	<aop:config>
+		<aop:pointcut expression="execution(* *..ServiceImpl.*(..))" id="stockPointCut"/>
+		<aop:advisor advice-ref="txAdvice" pointcut-ref="stockPointCut"/>
+	</aop:config>
+
+</beans>

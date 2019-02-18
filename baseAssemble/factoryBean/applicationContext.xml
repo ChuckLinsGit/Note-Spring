@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
+    		
+ <!-- get bean with static factory bean -->  		
+    		
+  	<bean id="testStaticBean" class="spring.baseAssemble.factoryBean.Impl.StaticFactory"
+  						 factory-method="getTestImpl"/>  
+  						 
+<!-- get bean with dynimyc factory bean -->   		
+
+    <bean id="testFactory" class="spring.baseAssemble.factoryBean.Impl.DynamicFactory"/>		
+    		
+  	<bean id="testDynamicBean" factory-bean="testFactory" factory-method="getTestImpl"/> 
+  
+</beans>

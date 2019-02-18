@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
+    			
+	<!-- 
+		setterDi baseSet
+		
+	<bean id="testSchool" class="spring.dependencyInjection.setterDi.bean.School" scope="singleton">
+		<property name="name" value="GDOU"/>
+	</bean>
+	
+	基本注入
+	<bean id="testImpl" class="spring.dependencyInjection.setterDi.bean.testImpl" scope="singleton">
+		<property name="name" value="Chuck Lin"/>
+		<property name="age" value="23"/>
+		<property name="school" ref="testSchool"/>
+	</bean> 
+	
+	byName方式进行域对象自动注入
+	<bean id="testImpl" class="spring.dependencyInjection.setterDi.bean.testImpl" autowire="byName">
+		<property name="name" value="Chuck Lin"/>
+		<property name="age" value="23"/>
+	</bean> 
+	
+	byType方式进行域对象自动注入：会自动寻找容器内具有指定类is-a关系的对象，找到超过一个该类型对象时报错
+	<bean id="testImpl" class="spring.dependencyInjection.setterDi.bean.testImpl" autowire="byType">
+		<property name="name" value="Chuck Lin"/>
+		<property name="age" value="23"/>
+	</bean> 
+	
+	
+	spel(spring expression language)
+	<bean id="testSchool" class="spring.dependencyInjection.setterDi.bean.School" scope="singleton">
+		<property name="name" value="GDOU"/>
+	</bean>
+		
+	<bean id="testImpl1" class="spring.dependencyInjection.setterDi.bean.testImpl" scope="singleton">
+		<property name="name" value="Chuck Lin"/>
+		<property name="age" value="#{T(java.lang.Math).random()*30}"/>
+		<property name="school" ref="testSchool"/>
+	</bean> 
+	
+	<bean id="testImpl2" class="spring.dependencyInjection.setterDi.bean.testImpl" scope="singleton">
+		<property name="name" value="Chuck Lin"/>
+		<property name="age" value="#{testImpl1.age >23 ? 23 :testImpl1.age}"/>
+		<property name="school" ref="testSchool"/>
+	</bean> 
+	
+	<bean id="testImpl" class="spring.dependencyInjection.setterDi.bean.testImpl" scope="singleton">
+		<property name="name" value="Chuck Lin"/>
+		<property name="age" value="#{testImpl2.getAgeIfLess23()}"/>
+		<property name="school" ref="testSchool"/>
+	</bean> 
+	
+	内部bean
+	<bean id="testImpl" class="spring.dependencyInjection.setterDi.bean.testImpl" scope="singleton">
+		<property name="name" value="Chuck Lin"/>
+		<property name="age" value="23"/>
+		<property name="school">
+			<bean class="spring.dependencyInjection.setterDi.bean.School" scope="singleton">
+				<property name="name" value="GDOU"/>
+			</bean>
+		</property>
+	</bean> 
+	
+	Abstract Parent within the same class
+	<bean id="testSchool" class="spring.dependencyInjection.setterDi.bean.School" >
+		<property name="name" value="GDOU"/>
+	</bean>
+	
+	<bean id="baseTestImpl" class="spring.dependencyInjection.setterDi.bean.testImpl" >
+		<property name="name" value="Chuck Lin"/>
+		<property name="school" ref="testSchool"/>
+	</bean>
+		
+	<bean id="testImpl1" parent="baseTestImpl">
+		<property name="age" value="#{T(java.lang.Math).random()*30}"/>
+	</bean> 
+	
+	<bean id="testImpl2" parent="baseTestImpl">
+		<property name="age" value="#{testImpl1.age >23 ? 23 :testImpl1.age}"/>
+	</bean> 
+	
+	<bean id="testImpl"  parent="baseTestImpl">
+		<property name="age" value="#{testImpl2.getAgeIfLess23()}"/>
+	</bean>
+	
+	Abstract Parent within the different class
+	<bean id="testSchool" class="spring.dependencyInjection.setterDi.bean.School" >
+		<property name="name" value="GDOU"/>
+	</bean>
+	
+	<bean id="baseTestImpl" abstract="true">
+		<property name="name" value="Chuck Lin"/>
+		<property name="school" ref="testSchool"/>
+	</bean>
+		
+	<bean id="testImpl1" class="spring.dependencyInjection.setterDi.bean.testImpl2" parent="baseTestImpl">
+		<property name="workAge" value="#{T(java.lang.Math).random()*30}"/>
+	</bean> 
+	
+	<bean id="testImpl2" class="spring.dependencyInjection.setterDi.bean.testImpl" parent="baseTestImpl">
+		<property name="age" value="#{T(java.lang.Math).random()*30}"/>
+	</bean> 
+	
+	<bean id="testImpl"  class="spring.dependencyInjection.setterDi.bean.testImpl"  parent="baseTestImpl">
+		<property name="age" value="#{testImpl2.age >23 ? 23 :testImpl2.age}"/>
+	</bean>
+	-->
+	
+
+<!-- 	
+	集合注入
+	<bean id="testSchool1" class="spring.dependencyInjection.setterDi.bean.School" scope="singleton">
+		<property name="name" value="GDOU"/>
+	</bean>
+	
+	<bean id="testSchool2" class="spring.dependencyInjection.setterDi.bean.School" scope="singleton">
+		<property name="name" value="GDUFL"/>
+	</bean>
+	<bean id="testImpl" class="spring.dependencyInjection.setterDi.bean.CollectionImpl" scope="singleton">
+		<property name="baseId">
+			<array>
+				<array>
+					<value>姓名</value>
+					<value>Chuck Lin</value>
+				</array>
+				<array>
+					<value>年龄</value>
+					<value>23</value>
+				</array>
+			</array>
+		</property>
+		
+		<property name="schools">
+			<array>
+				<ref bean="testSchool1"/>			
+				<ref bean="testSchool2"/>	
+			</array>		
+		</property>
+		
+		<property name="list" value="中国，广东"/>
+		
+		<property name="set" value="汕头，潮阳"/>
+		
+		<property name="map">
+			<map>
+				<entry key="街道" value="棉北街道"/>
+				<entry key="村" value="五三新村"/>
+			</map>
+		</property>
+		
+		<property name="pro" value="三路四巷4号"/>
+					
+	</bean> 
+	
+	
+	<bean id="testImpl" class="spring.dependencyInjection.setterDi.bean.CollectionImpl" scope="singleton">
+		<property name="baseId">
+			<array>
+				<array>
+					<value>姓名</value>
+					<value>Chuck Lin</value>
+				</array>
+				<array>
+					<value>年龄</value>
+					<value>23</value>
+				</array>
+			</array>
+		</property>
+		
+		<property name="schools">
+			<array>
+				<ref bean="testSchool1"/>			
+				<ref bean="testSchool2"/>	
+			</array>		
+		</property>
+		
+		<property name="list">
+			<list>
+				<value>中国</value>
+				<value>广东</value>
+			</list>
+		</property>
+		
+		<property name="set">
+			<set>
+				<value>汕头</value>
+				<value>潮阳</value>
+			</set>
+		</property>
+		
+		<property name="map">
+			<map>
+				<entry key="街道" value="棉北街道"/>
+				<entry key="村" value="五三新村"/>
+			</map>
+		</property>
+		
+		<property name="pro">
+			<props>
+				<prop key="具体地址">三路四巷4号</prop>
+			</props>
+		</property>
+					
+	</bean> 
+	-->
+	
+	<import resource="spring-base.xml"/>
+	<import resource="spring-beans.xml"/>
+</beans>
